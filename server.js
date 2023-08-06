@@ -35,8 +35,8 @@ const user = process.env.USER
 const password = process.env.PASSWORD 
 
 // Importation des routes 
-//const professionnalRoutes = require('./routes/ProfessionnalRoutes')
-//const openingHoursRoutes = require('./routes/OpeningHoursRoutes')
+const professionnalRoutes = require('./routes/ProfessionnalRoutes')
+const openingHoursRoutes = require('./routes/OpeningHoursRoutes')
 
 mysql.createConnection({
     host: host,
@@ -54,8 +54,8 @@ mysql.createConnection({
     })
 
     //Appel des routes 
-    //professionnalRoutes(app, db)
-    //openingHoursRoutes(app, db)
+    professionnalRoutes(app, db)
+    openingHoursRoutes(app, db)
 })
 .catch(err => console.log('Echec connexion', err))
 
