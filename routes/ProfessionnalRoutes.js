@@ -2,7 +2,7 @@ module.exports = (app,db)=>{
     const professionalModel = require('../models/ProfessionnalModel')(db)
     
     //route permettant de récupérer tous les professionnels
-    app.get('/pros/all', async (req, res, next) => {
+    app.get('/professionnels', async (req, res, next) => {
     	let pros = await professionalModel.getAllProfessionals()
     	if(pros.code){
     		res.json({status: 500, msg: "Problème lors de la récupération des professionnels", err: pros})
@@ -12,7 +12,7 @@ module.exports = (app,db)=>{
     })
 
     //route permettant de récupérer les pros par leurs id
-    app.get('/pros/:id', async (req, res, next)=>{
+    app.get('/professionnel/:id', async (req, res, next)=>{
         let prosById = await professionalModel.GetProfessionalById(req.params.id)
         if(prosById.length === 0){
             res.json({status: 204, msg: "Il n'y a pas de professionnel correspondant à cet ID"})
@@ -26,7 +26,7 @@ module.exports = (app,db)=>{
     })
 
     //route permettant d'ajouter un professionnel
-    app.post('/add/pros', async (req, res, next)=>{
+    app.post('/ajout/pro', async (req, res, next)=>{
         let addPro = await professionalModel.addProfessional(req)
         if(addPro.code){
             res.json({status: 500, msg: "problème lors de la création du professionnel"})
@@ -36,7 +36,7 @@ module.exports = (app,db)=>{
     })
 
     //route permettant de modifier un professionnel
-    app.put('/update/pros/:id', async (req, res, next)=>{
+    app.put('/modif/pro/:id', async (req, res, next)=>{
         let updatedPro = await professionalModel.updateProfessional(req, req.params.id)
         if(updatedPro.code){
             res.json({status: 500, msg: "Problème lors de la modification du professionnel"})
@@ -46,7 +46,7 @@ module.exports = (app,db)=>{
     })
 
     //route permettant de supprimer un professionnel 
-    app.delete('/delete/pros/:id', async (req, res, next)=>{
+    app.delete('/suppr/pro/:id', async (req, res, next)=>{
         let deletedPro = await professionalModel.deleteProfessional(req.params.id)
         if(deletedPro.code){
             res.json({status:500, msg: "Problème lors de la suppression du professionnel"})
@@ -56,7 +56,7 @@ module.exports = (app,db)=>{
     })
 
     //route permettant de récupérer des professionnel par spécialisation
-    app.get('/pros/categorie/:specialitee_id', async (req, res, next)=>{
+    app.get('/pro/categorie/:specialitee_id', async (req, res, next)=>{
         let proByCategorie = await professionalModel.getProfessionnalBySpecialiteeId(req.params.specialitee_id)
         if(proByCategorie.code){
             res.json({status: 500, msg: "Problème lors de la récupération des professionnels"})
@@ -66,7 +66,7 @@ module.exports = (app,db)=>{
     })
 
     //route de récupération des spécialisations 
-    app.get('/all/specialisations', async (req, res, next)=>{
+    app.get('/specialisations', async (req, res, next)=>{
         let specialisations = await professionalModel.getAllSpecialisation()
         if(specialisations.code){
             res.json({status: 500, msg: "Problème lors de la récupération des spécialisations"})
