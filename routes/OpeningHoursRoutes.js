@@ -2,52 +2,53 @@ module.exports = (app, db)=>{
     const openingHoursModel = require('../models/OpeningHoursModels')(db)
 
     //route permettant de récupérer tous les horaires 
-    app.get('/horaires', async(req, res, next)=>{
-        let allHours = await openingHoursModel.getAllHours()
-        if(allHours.code){
+    app.get('/opening-hours', async(req, res, next)=>{
+        let allOpeningHours = await openingHoursModel.getAllOpeningHours()
+        if(allOpeningHours.code){
             res.json({status: 500, msg: "Problème lors de la récupération des horaires"})
         } else {
-            res.json({status: 200, result: allHours})
+            res.json({status: 200, result: allOpeningHours})
         }
     })
 
     //route permettant de récupérer les horaires par professionnel
-    app.get('/pro/horaires/:fk_pro_id', async (req, res, next)=>{
-        let hoursByProfessionnal = await openingHoursModel.getHoursByProfessionnal(req.params.fk_pro_id)
-        if(hoursByProfessionnal.code){
+    app.get('/pro/opening-hours/:fk_pro_id', async (req, res, next)=>{
+        let openingHoursByProfessionnal = await openingHoursModel.getOpeningHoursByProfessional(req.params.fk_pro_id)
+        if(openingHoursByProfessionnal.code){
             res.json({status: 500, msg: "Problème lors de la récupération des horaires du professionnel"})
         } else {
-            res.json({status: 200, result: hoursByProfessionnal})
+            res.json({status: 200, result: openingHoursByProfessionnal})
         }
     })
 
     //route permettant d'ajouter un horaire 
-    app.post('/ajout/horaires', async (req, res, nest)=>{
-        let addHours = await openingHoursModel.addHours(req)
-        if(addHours.code){
+    app.post('/save/opening-hours', async (req, res, nest)=>{
+        let addOpeningHours = await openingHoursModel.saveOpeningHours(req)
+        if(addOpeningHours.code){
             res.json({status: 500, msg: "Problème lors de l'ajout des horaires"})
         }  else {
-            res.json({status: 200, result: addHours})
+            res.json({status: 200, result: addOpeningHours})
         }
     })
 
     //route permettant de modifier des horaires 
-    app.put('/modif/horaires/:id', async (req, res, next)=>{
-        let updatedHours = await openingHoursModel.updateHours(req, req.params.id)
-        if(updatedHours.code){
+    app.put('/update/opening-hours/:id', async (req, res, next)=>{
+        let updatedOpeningHours = await openingHoursModel.updateOpeninghours(req, req.params.id)
+        if(updatedOpeningHours.code){
             res.json({status: 500, msg: "Problème lors de la modification des horaires"})
+            console.log(updatedOpeningHours.code)
         } else {
-            res.json({status: 200, result: updatedHours})
+            res.json({status: 200, result: updatedOpeningHours})
         }
     })
 
     //route permettant de supprimer des horaires 
-    app.delete('/suppr/horaires/:id', async (req, res, next)=>{
-        let deletedHours = await openingHoursModel.deleteHours(req.params.id)
-        if(deletedHours.code){
+    app.delete('/delete/opening-hours/:id', async (req, res, next)=>{
+        let deletedOpeningHours = await openingHoursModel.deleteOpeningHours(req.params.id)
+        if(deletedOpeningHours.code){
             res.json({status: 500, msg: "Problème lors de la suppression des horaires"})
         } else {
-            res.json({status: 200, result: deletedHours})
+            res.json({status: 200, result: deletedOpeningHours})
         }
     })
 }
