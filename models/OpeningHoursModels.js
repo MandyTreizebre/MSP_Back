@@ -6,8 +6,8 @@ module.exports = (_db) => {
 class OpeningHoursModel {
 
     // Récupération de tous les horaires 
-    static getAllHours(){
-        return db.query('SELECT * FROM horaires')
+    static getAllOpeningHours(){
+        return db.query('SELECT * FROM opening_hours')
         .then((res)=>{
             return res
         })
@@ -17,8 +17,8 @@ class OpeningHoursModel {
     }
 
     // Récupération de tous les horaires par professionnel 
-    static getHoursByProfessionnal(fk_pro_id){
-        return db.query('SELECT * FROM horaires WHERE fk_pro_id = ?', [fk_pro_id])
+    static getOpeningHoursByProfessional(fk_pro_id){
+        return db.query('SELECT * FROM opening_hours WHERE fk_pro_id = ?', [fk_pro_id])
         .then((res)=>{
             return res
         })
@@ -28,9 +28,9 @@ class OpeningHoursModel {
     }
 
     // Ajout d'un horaire
-    static addHours(req){
-        return db.query('INSERT INTO horaires (jour, h_debut_matin, h_fin_matin, h_debut_apm, h_fin_apm, fk_pro_id) VALUES (?, ?, ?, ?, ?, ?)', 
-        [req.body.jour, req.body.h_debut_matin, req.body.h_fin_matin, req.body.h_debut_apm, req.body.h_fin_apm, req.body.fk_pro_id])
+    static saveOpeningHours(req){
+        return db.query('INSERT INTO opening_hours (day, h_start_morning, h_end_morning, h_start_afternoon, h_end_afternoon, fk_pro_id) VALUES (?, ?, ?, ?, ?, ?)', 
+        [req.body.day, req.body.h_start_morning, req.body.h_end_morning, req.body.h_start_afternoon, req.body.h_end_afternoon, req.body.fk_pro_id])
         .then((res)=>{
             return res
         })
@@ -40,9 +40,9 @@ class OpeningHoursModel {
     }
     
     // Modification d'un horaire 
-    static updateHours(req, id){
-        return db.query('UPDATE horaires SET jour= ?, h_debut_matin= ?, h_fin_matin= ?, h_debut_apm= ?, h_fin_apm= ?, fk_pro_id= ?',
-        [req.body.jour, req.body.h_debut_matin, req.body.h_fin_matin, req.body.h_debut_apm, req.body.h_fin_apm, req.body.fk_pro_id, id])
+    static updateOpeninghours(req, id){
+        return db.query('UPDATE opening_hours SET day= ?, h_start_morning= ?, h_end_morning= ?, h_start_afternoon= ?, h_end_afternoon= ?, fk_pro_id= ? WHERE id= ?',
+        [req.body.day, req.body.h_start_morning, req.body.h_end_morning, req.body.h_start_afternoon, req.body.h_end_afternoon, req.body.fk_pro_id, id])
         .then((res)=>{
             return res
         })
@@ -52,8 +52,8 @@ class OpeningHoursModel {
     }
 
     // Suppresion d'un horaire 
-    static deleteHours(id){
-        return db.query('DELETE from horaires WHERE id= ?', [id])
+    static deleteOpeningHours(id){
+        return db.query('DELETE from opening_hours WHERE id= ?', [id])
         .then((res)=>{
             return res
         })
