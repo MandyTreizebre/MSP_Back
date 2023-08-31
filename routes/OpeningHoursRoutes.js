@@ -51,4 +51,15 @@ module.exports = (app, db)=>{
             res.json({status: 200, result: deletedOpeningHours})
         }
     })
+
+    //essai 
+
+    app.get('/essai/:speciality_id', async (req, res, next)=> {
+        let essaiPro = await openingHoursModel.essai(req.params.speciality_id)
+        if(essaiPro.code){
+            res.json({status: 500, msg: "Problème lors de la récupération des horaires"})
+        } else {
+            res.json({status: 200, result: essaiPro})
+        }
+    })
 }

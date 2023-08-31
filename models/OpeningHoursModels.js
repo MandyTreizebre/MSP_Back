@@ -61,4 +61,16 @@ class OpeningHoursModel {
             return err
         })
     }
+
+    //essai
+    static essai(speciality_id){
+        return db.query('SELECT p.lastname, p.firstname, p.address, p.zip, p.city, p.phone, p.details, d.day_name AS day_name, pa.h_start_morning, pa.h_end_morning, pa.h_start_afternoon, pa.h_end_afternoon FROM professionals p JOIN planning pa ON pro_id = pa.pro_id JOIN days d on pa.day_id = d.id WHERE speciality_id = ?', [speciality_id])
+        .then((res)=>{
+            return res
+        })
+        .catch((err)=>{
+            console.log(err)
+            return err
+        })
+    }
 }

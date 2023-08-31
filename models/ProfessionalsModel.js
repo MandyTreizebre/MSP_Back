@@ -64,7 +64,7 @@ class ProfessionalsModel {
 
     //Récupération des professionnels par spécialisation (Page des pros x9)
     static getProfessionnalBySpecialityId(speciality_id){
-        return db.query('SELECT * FROM professionals WHERE speciality_id = ?', [speciality_id])
+        return db.query('SELECT * FROM professionals INNER JOIN specializations ON professionals.speciality_id = specializations.id WHERE speciality_id = 1', [speciality_id])
         .then((res)=>{
             return res
         })
