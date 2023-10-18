@@ -17,8 +17,8 @@ class OpeningHoursModel {
     }
 
     // Récupération de tous les horaires par professionnel 
-    static getOpeningHoursByProfessional(fk_pro_id){
-        return db.query('SELECT * FROM opening_hours WHERE fk_pro_id = ?', [fk_pro_id])
+    static getOpeningHoursByPro(pro_id){
+        return db.query('SELECT * FROM planning WHERE pro_id = ?', [pro_id])
         .then((res)=>{
             return res
         })
@@ -28,7 +28,7 @@ class OpeningHoursModel {
     }
 
     // Ajout d'un horaire
-    static saveOpeningHours(req){
+    /*static saveOpeningHours(req){
         return db.query('INSERT INTO opening_hours (day, h_start_morning, h_end_morning, h_start_afternoon, h_end_afternoon, fk_pro_id) VALUES (?, ?, ?, ?, ?, ?)', 
         [req.body.day, req.body.h_start_morning, req.body.h_end_morning, req.body.h_start_afternoon, req.body.h_end_afternoon, req.body.fk_pro_id])
         .then((res)=>{
@@ -37,12 +37,12 @@ class OpeningHoursModel {
         .catch((err)=>{
             return err
         })
-    }
+    }*/
     
-    // Modification d'un horaire 
-    static updateOpeninghours(req, id){
-        return db.query('UPDATE opening_hours SET day= ?, h_start_morning= ?, h_end_morning= ?, h_start_afternoon= ?, h_end_afternoon= ?, fk_pro_id= ? WHERE id= ?',
-        [req.body.day, req.body.h_start_morning, req.body.h_end_morning, req.body.h_start_afternoon, req.body.h_end_afternoon, req.body.fk_pro_id, id])
+    // Modification d'un horaire  OK VERIF
+    static editProOpeningHours(req){
+        return db.query('UPDATE planning SET h_start_morning= ?, h_end_morning= ?, h_start_afternoon= ?, h_end_afternoon= ? WHERE pro_id= ? AND day_id= ?',
+        [req.body.h_start_morning, req.body.h_end_morning, req.body.h_start_afternoon, req.body.h_end_afternoon, req.params.pro_id, req.body.day_id])
         .then((res)=>{
             return res
         })
@@ -52,8 +52,32 @@ class OpeningHoursModel {
     }
 
     // Suppresion d'un horaire 
-    static deleteOpeningHours(id){
+    /*static deleteOpeningHours(id){
         return db.query('DELETE from opening_hours WHERE id= ?', [id])
+        .then((res)=>{
+            return res
+        })
+        .catch((err)=>{
+            return err
+        })
+    }*/
+
+    //essai
+    /*static displayProBySpe(speciality_id){
+        return db.query('SELECT DISTINCT professionals.lastname, professionals.firstname, professionals.address, professionals.zip, professionals.city, professionals.phone, professionals.details, d.day_name AS day_name, planning.h_start_morning, planning.h_end_morning, planning.h_start_afternoon, planning.h_end_afternoon FROM professionals JOIN planning  ON professionals.id = planning.pro_id JOIN days d on planning.day_id = d.id WHERE professionals.speciality_id = ?', [speciality_id])
+        .then((res)=>{
+            return res
+        })
+        .catch((err)=>{
+            console.log(err)
+            return err
+        })
+    }*/
+
+    /* OK VERIF*/
+    static addOpeningHours(req){
+        return db.query('INSERT INTO planning (pro_id, day_id, h_start_morning, h_end_morning, h_start_afternoon, h_end_afternoon) VALUES (?, ?, ?, ?, ?, ?)',
+        [req.body.pro_id, req.body.day_id, req.body.h_start_morning, req.body.h_end_morning, req.body.h_start_afternoon, req.body.h_end_afternoon])
         .then((res)=>{
             return res
         })
@@ -62,14 +86,14 @@ class OpeningHoursModel {
         })
     }
 
-    //essai
-    static essai(speciality_id){
-        return db.query('SELECT p.lastname, p.firstname, p.address, p.zip, p.city, p.phone, p.details, d.day_name AS day_name, pa.h_start_morning, pa.h_end_morning, pa.h_start_afternoon, pa.h_end_afternoon FROM professionals p JOIN planning pa ON pro_id = pa.pro_id JOIN days d on pa.day_id = d.id WHERE speciality_id = ?', [speciality_id])
+
+
+    static getDays(){
+        return db.query('SELECT * FROM days')
         .then((res)=>{
             return res
         })
         .catch((err)=>{
-            console.log(err)
             return err
         })
     }
