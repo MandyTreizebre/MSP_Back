@@ -38,7 +38,10 @@ const password = process.env.PASSWORD
 const professionalRoutes = require('./routes/ProfessionalRoutes')
 const openingHoursRoutes = require('./routes/OpeningHoursRoutes')
 const externalProfessionalsRoutes = require ('./routes/ExternalProfessionalsRoutes')
-const newsModel= require ('./routes/NewsRoutes')
+const newsRoutes = require ('./routes/NewsRoutes')
+const adminRoutes = require('./routes/AdminRoutes')
+const infosRoutes = require('./routes/HealthInformationsRoutes')
+const authRoutes = require('./routes/authRoutes')
 
 mysql.createConnection({
     host: host,
@@ -59,7 +62,10 @@ mysql.createConnection({
     professionalRoutes(app, db)
     openingHoursRoutes(app, db)
     externalProfessionalsRoutes(app, db)
-    newsModel(app, db)
+    newsRoutes(app, db)
+    adminRoutes(app, db)
+    infosRoutes(app, db)
+    authRoutes(app, db)
 })
 .catch(err => console.log('Echec connexion', err))
 
