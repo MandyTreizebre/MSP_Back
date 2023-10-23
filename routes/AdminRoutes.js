@@ -3,59 +3,87 @@ const saltRounds = 10
 const jwt = require('jsonwebtoken')
 const secret = process.env.JWT_SECRET
 const withAuth = require('../withAuth')
+const validatePassword = require ('../validatePassword')
 
 module.exports = (app, db)=>{
+    /*Importing the AdminModel and initializing it with the database connection*/
     const adminModel = require('../models/AdminModel')(db)
 
-    app.post('/admin/save', withAuth, async(req, res, next)=>{
-        let userChecked = await adminModel.getAdminByEmail(req.body.email)
-        if(userChecked.code){
-            res.json({status: 500, msg:"Erreur", err: userChecked})
+    const emailRegex = /^[A-Za-z0-9._%-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,4}$/
+
+    /*Route handler for saving an admin*/
+    app.post('/api/save-admin', withAuth, validatePassword, async(req, res, next)=>{
+      /*Validate email address with a regular expression*/
+        if (!emailRegex.test(req.body.email)) {
+            res.json({ status: 400, msg: 'Adresse email invalide' })
+            return
+        }
+        /*Checking if the email already exists*/
+        let adminChecked = await adminModel.getAdminByEmail(req.body.email)
+        if(adminChecked.code){
+            res.json({status: 500, msg:"Erreur", err: adminChecked})
         } else {
-            if(userChecked.length > 0){
-                if(userChecked[0].email === req.body.email){
+          /*If email exists, sending a 401 response*/
+            if(adminChecked.length > 0){
+                if(adminChecked[0].email === req.body.email){
                     res.json({status: 401, msg: "Email déjà utilisé."})
                 }
             } else {
-                let user = await adminModel.saveAdmin(req)
-                if(user.code){
-                    res.json({status: 500, msg: "Problème", err: user})
+              /*If email doesn't exist, attempting to save the admin*/
+                let admin = await adminModel.saveAdmin(req)
+                if(admin.code){
+                    res.json({status: 500, msg: "Problème lors de la création de l'administrateur", err: admin})
                 } else {
-                    res.json({status: 200, msg: "Utilisateur enregistré"})
+                    res.json({status: 201, msg: "Administrateur créé"})
                 }
             }
         }
     })
 
-    app.post('/login', async (req, res, next) => {
+    /*Route handler for logging in*/
+    app.post('/api/login', async (req, res, next) => {
+        /*Validate email address with a regular expression*/
+        if (!emailRegex.test(req.body.email)) {
+            res.json({ status: 400, msg: 'Adresse email invalide' })
+            return
+        }
         if (req.body.email === "") {
           res.json({ status: 401, msg: "Entrez un email" })
         } else {
-          let user = await adminModel.getAdminByEmail(req.body.email)
-          if (user.code) {
-            console.log(user.code)
-            res.json({ status: 500, msg: "Erreur vérification email", err: user })
+          /*Checking the email against the database*/
+          let admin = await adminModel.getAdminByEmail(req.body.email)
+          console.log("Admin ID:", admin[0].id)
+          if (admin.code) {
+            res.json({ status: 500, msg: "Erreur vérification email", err: admin })
           } else {
-            if (user.length === 0) {
-              res.json({ status: 404, msg: "Pas d'utilisateur correspondant à ce mail." })
+            /*If no admin found with the email, sending a 404 response*/
+            if (admin.length === 0) {
+              res.json({ status: 401, msg: "Pas d'utilisateur correspondant à ce mail." })
             } else {
-              let same = await bcrypt.compare(req.body.password, user[0].password)
+              /*If admin found, comparing the password*/
+              let same = await bcrypt.compare(req.body.password, admin[0].password)
               if (same) {
-                const payload = { email: req.body.email, id: user[0].id, role: user[0].role }
-                const token = jwt.sign(payload, secret, {expiresIn: '1h'})
-                let connect = await adminModel.updateConnexion(user[0].id)
-                if (connect.code) {
-                  console.log("CONSOLE DE CONNECT.CODE:", connect.code)
-                  res.json({ status: 500, err: connect })
+                /*If password matches, generating a token and sending it in the response*/
+                const payload = { email: req.body.email, id: admin[0].id }
+                const token = jwt.sign(payload, secret)
+                res.cookie('token', token, { httpOnly: true, secure: false, maxAge: 3600000, sameSite: 'Strict', path: '/' })
+                /*Updating the last connection time of the admin*/
+                let connected = await adminModel.updateConnexion(admin[0].id)
+                if (connected.code) {
+                  res.json({ status: 500, err: connected })
                 } else {
-                  res.json({ status: 200, token: token, user: user[0] })
-                  console.log("CONSOLE DE STATUS 200 USER ET TOKEN", token, user[0])
+                  res.json({ status: 200, token: token, admin: admin[0] })
                 }
               } else {
-                res.json({ status: 401, msg: "Votre mot de passe est incorrect." })
+                res.json({ status: 403, msg: "Votre mot de passe est incorrect."})
               }
             }
           }
         }
     })
+
+    app.get("/api/logout", (req, res) => {
+      res.cookie("token", '', {maxAge: 0, httpOnly: true, path: '/' })
+      res.json({status: 200, message: 'Logged Out'})
+    } )
 }
