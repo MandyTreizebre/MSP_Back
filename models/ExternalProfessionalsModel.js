@@ -1,22 +1,27 @@
+/*Export function to initialize model with database connection*/
 module.exports = (_db) => {
-    db = _db
+    db = _db /*Assign database connection to a global variable db*/
     return ExternalProfessionals
 }
 
 class ExternalProfessionals {
-    //Récupération de tous les autres professionnels
+    /*Get all external professionals from the database*/
     static getExternalPros(){
-        return db.query('SELECT * from external_professionals')
+        /*Request to select rows from the external_professionals table in database*/
+        return db.query('SELECT name, picture, link from external_professionals')
         .then((res)=>{
+            /*Return query result in case of success*/
             return res
         })
         .catch((err)=>{
+            /*Return query result in case of error*/
             return err
         })
     } 
 
-    //Ajout d'autres professionnels
+    /*Add a new external professionals to the database*/
     static addExternalPro(req){
+        /*Request to insert into rows from the external_professionals table in database*/
         return db.query('INSERT INTO external_professionals(name, picture, link) VALUES(?, ?, ?)',
         [req.body.name, req.body.picture, req.body.link])
         .then((res)=>{
@@ -27,8 +32,9 @@ class ExternalProfessionals {
         })
     }
 
-    //Modification d'un autre pros 
+    /*Update an existing external professional in the database*/
     static updateExternalPro(req, id){
+        /*request to update rows from the external_professionals table in database*/
         return db.query('UPDATE external_professionals SET name= ?, picture= ?, link= ? WHERE id= ?', 
         [req.body.name, req.body.picture, req.body.link, id])
         .then((res)=>{
@@ -39,8 +45,9 @@ class ExternalProfessionals {
         })
     }
 
-    //Supprfession d'un autre pros 
+    /*Delete an existing external professional in the database*/
     static deleteExternalPro(id){
+        /*request to delete a professional with the provided ID*/
         return db.query('DELETE FROM external_professionals WHERE id= ?', [id])
         .then((res)=>{
             return res
@@ -49,5 +56,4 @@ class ExternalProfessionals {
             return err
         })
     }
-    
 }

@@ -1,81 +1,39 @@
+/*Export function to initialize model with database connection*/
 module.exports = (_db) => {
-    db = _db
+    db = _db /*Assign database connection to a global variable db*/
     return OpeningHoursModel
 }
 
 class OpeningHoursModel {
-
-    // Récupération de tous les horaires 
+    // Get all opening hours from the database*/
     static getAllOpeningHours(){
-        return db.query('SELECT * FROM opening_hours')
+        /*request to select rows from the planning table in database*/
+        return db.query('SELECT pro_id, day_id, h_start_morning, h_end_morning, h_start_afternoon, h_end_afternoon FROM planning')
         .then((res)=>{
+            /*Return query result in case of success*/
             return res
         })
         .catch((err)=>{
+            /*Return query result in case of error*/
             return err
         })
     }
 
-    // Récupération de tous les horaires par professionnel 
+    /*Get opening hours by pro id*/
     static getOpeningHoursByPro(pro_id){
-        return db.query('SELECT * FROM planning WHERE pro_id = ?', [pro_id])
+        /*request to select rows from the planning table in database with the provided pro_id*/
+        return db.query('SELECT pro_id, day_id, h_start_morning, h_end_morning, h_start_afternoon, h_end_afternoon FROM planning WHERE pro_id = ?', [pro_id])
         .then((res)=>{
             return res
         })
         .catch((err)=>{
-            return err
+           return err
         })
     }
 
-    // Ajout d'un horaire
-    /*static saveOpeningHours(req){
-        return db.query('INSERT INTO opening_hours (day, h_start_morning, h_end_morning, h_start_afternoon, h_end_afternoon, fk_pro_id) VALUES (?, ?, ?, ?, ?, ?)', 
-        [req.body.day, req.body.h_start_morning, req.body.h_end_morning, req.body.h_start_afternoon, req.body.h_end_afternoon, req.body.fk_pro_id])
-        .then((res)=>{
-            return res
-        })
-        .catch((err)=>{
-            return err
-        })
-    }*/
-    
-    // Modification d'un horaire  OK VERIF
-    static editProOpeningHours(req){
-        return db.query('UPDATE planning SET h_start_morning= ?, h_end_morning= ?, h_start_afternoon= ?, h_end_afternoon= ? WHERE pro_id= ? AND day_id= ?',
-        [req.body.h_start_morning, req.body.h_end_morning, req.body.h_start_afternoon, req.body.h_end_afternoon, req.params.pro_id, req.body.day_id])
-        .then((res)=>{
-            return res
-        })
-        .catch((err)=>{
-            return err
-        })
-    }
-
-    // Suppresion d'un horaire 
-    /*static deleteOpeningHours(id){
-        return db.query('DELETE from opening_hours WHERE id= ?', [id])
-        .then((res)=>{
-            return res
-        })
-        .catch((err)=>{
-            return err
-        })
-    }*/
-
-    //essai
-    /*static displayProBySpe(speciality_id){
-        return db.query('SELECT DISTINCT professionals.lastname, professionals.firstname, professionals.address, professionals.zip, professionals.city, professionals.phone, professionals.details, d.day_name AS day_name, planning.h_start_morning, planning.h_end_morning, planning.h_start_afternoon, planning.h_end_afternoon FROM professionals JOIN planning  ON professionals.id = planning.pro_id JOIN days d on planning.day_id = d.id WHERE professionals.speciality_id = ?', [speciality_id])
-        .then((res)=>{
-            return res
-        })
-        .catch((err)=>{
-            console.log(err)
-            return err
-        })
-    }*/
-
-    /* OK VERIF*/
+    /*Add new opening hours to the database*/
     static addOpeningHours(req){
+        /*request to insert into rows from the planning table in database*/
         return db.query('INSERT INTO planning (pro_id, day_id, h_start_morning, h_end_morning, h_start_afternoon, h_end_afternoon) VALUES (?, ?, ?, ?, ?, ?)',
         [req.body.pro_id, req.body.day_id, req.body.h_start_morning, req.body.h_end_morning, req.body.h_start_afternoon, req.body.h_end_afternoon])
         .then((res)=>{
@@ -86,10 +44,23 @@ class OpeningHoursModel {
         })
     }
 
+    /*Update existing opening_hours in the database*/
+    static udpateProOpeningHours(req){
+        /*request to update rows from the planning table in database*/
+        return db.query('UPDATE planning SET h_start_morning= ?, h_end_morning= ?, h_start_afternoon= ?, h_end_afternoon= ? WHERE pro_id= ? AND day_id= ?',
+        [req.body.h_start_morning, req.body.h_end_morning, req.body.h_start_afternoon, req.body.h_end_afternoon, req.params.pro_id, req.body.day_id])
+        .then((res)=>{
+            return res
+        })
+        .catch((err)=>{
+            return err
+        })
+    }
 
-
+    /*Get days from the database*/
     static getDays(){
-        return db.query('SELECT * FROM days')
+        /*request to select rows from the days table in database*/
+        return db.query('SELECT id, day_name FROM days')
         .then((res)=>{
             return res
         })
