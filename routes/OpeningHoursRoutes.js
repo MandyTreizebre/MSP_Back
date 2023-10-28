@@ -115,7 +115,6 @@ module.exports = (app, db)=>{
         } catch (error) {
             /*send a response with status 500 in case of an exception*/
             res.status(500).json({ status: 500, msg: "Erreur de serveur interne" })
-            console.log(error)
         }
     })
 

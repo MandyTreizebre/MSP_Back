@@ -52,7 +52,6 @@ module.exports = (app, db)=>{
         } else {
           /*Checking the email against the database*/
           let admin = await adminModel.getAdminByEmail(req.body.email)
-          console.log("Admin ID:", admin[0].id)
           if (admin.code) {
             res.json({ status: 500, msg: "Erreur vérification email", err: admin })
           } else {

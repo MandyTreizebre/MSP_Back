@@ -9,8 +9,6 @@ module.exports = (app, db)=>{
 
     /*Definition of a GET route to verify the token. This route uses the withAuth middleware for authentication*/
     app.get('/api/admin/checkToken', withAuth, async (req, res, next)=>{
-        console.log("ID:", req.id)
-        console.log("TOKEN:", req.token)
         /*Attempt to retrieve admin information using ID extracted from token by withAuth middleware*/
         let admin = await adminModel.getAdminById(req.id)
         /*Check whether an error has occurred during the database query*/
@@ -21,7 +19,6 @@ module.exports = (app, db)=>{
             /*Send response with 200 status and admin information in case of success*/
             admin[0].token = req.token
             res.json({status: 200, admin: admin[0]})
-            console.log("CONSOLE DE ADMIN DANS BACK CHECKTOKEN",admin[0])
         }
     })
 }

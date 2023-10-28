@@ -4,10 +4,9 @@ const cookieParser = require('cookie-parser')
 const secret = process.env.JWT_SECRET
 
 const withAuth = (req, res, next)=> {
-    console.log("passe par withAuth")
+
     /*Extract the token from cookies*/
     const token = req.cookies['token']
-
     /*Check if the token is undefined*/
     if(token === undefined){
         /* If the token is undefined, respond with a 404 status and an error message*/
@@ -22,8 +21,6 @@ const withAuth = (req, res, next)=> {
                 /*If the token is valid, extract the decoded id and assign it to req.id*/
                 req.id = decoded.id
                 req.token = token
-                console.log("Decoded ID:", decoded.id)
-                console.log("Decoded TOKEN:", token)
                 /*Call the next middleware function in the stack*/
                 next()
             }
