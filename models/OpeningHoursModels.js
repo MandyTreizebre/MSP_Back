@@ -5,7 +5,7 @@ module.exports = (_db) => {
 }
 
 class OpeningHoursModel {
-    // Get all opening hours from the database*/
+    /* Get all opening hours from the database*/
     static getAllOpeningHours(){
         /*request to select rows from the planning table in database*/
         return db.query('SELECT pro_id, day_id, h_start_morning, h_end_morning, h_start_afternoon, h_end_afternoon FROM planning')

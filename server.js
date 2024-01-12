@@ -24,15 +24,15 @@ app.use(cors({
 }))
 
 /*Importing the 'express-fileupload' module*/
-const fileUpload = require("express-fileupload")
+/*const fileUpload = require("express-fileupload")*/
 
 /*Adding the 'express-fileupload' middleware to the Express app, creating parent directory if it doesn't exist*/
-app.use(fileUpload({
+/*app.use(fileUpload({
     createParentPath: true
-}))
+}))*/
 
 /*Importing the 'express.urlencoded' middleware to handle data sent by HTML forms*/
-app.use(express.urlencoded({extended: false}))
+app.use(express.urlencoded({extended: true}))
 /*Importing the 'express.json' middleware to handle JSON data sent in the HTTP request body*/
 app.use(express.json())
 /*Importing the 'express.static' middleware to make static files in the 'public' directory accessible from the browser*/

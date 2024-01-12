@@ -66,7 +66,7 @@ module.exports = (app,db)=>{
             return res.status(400).json({ status: 400, msg: "Addresse invalide" })
         }
         if (!req.body.zip || req.body.zip.length > 5) {
-            return res.status(400).json({ status: 400, msg: "Code posta invalide" })
+            return res.status(400).json({ status: 400, msg: "Code postal invalide" })
         }
         if (!req.body.city || req.body.city.length > 50) {
             return res.status(400).json({ status: 400, msg: "Ville invalide" })
@@ -108,7 +108,7 @@ module.exports = (app,db)=>{
             return res.status(400).json({ status: 400, msg: "Addresse invalide" })
         }
         if (!req.body.zip || req.body.zip.length > 5) {
-            return res.status(400).json({ status: 400, msg: "Code posta invalide" })
+            return res.status(400).json({ status: 400, msg: "Code postal invalide" })
         }
         if (!req.body.city || req.body.city.length > 50) {
             return res.status(400).json({ status: 400, msg: "Ville invalide" })
@@ -153,6 +153,12 @@ module.exports = (app,db)=>{
 
     /*Get route to retrieve professionals by their specializations*/
     app.get('/api/pro/:speciality_id', async (req, res, next)=> {
+        const specialityId = parseInt(req.params.speciality_id)
+
+        if (isNaN(specialityId)){
+            res.status(404).json({ status: 404, msg: "Page non trouvée" });
+            return;
+        }
         /*Call the model's getProBySpe method to get professionals*/
         let pro = await professionalsModel.getProBySpe(req.params.speciality_id)
         /*Check whether an error has occurred during the database query*/
@@ -180,7 +186,7 @@ module.exports = (app,db)=>{
     })
 
     /*Get route to retrieve professionals who are on guard*/
-    app.get('/api/professionnels-guards', async (req, res, next)=> {
+    app.get('/api/professionals-guards', async (req, res, next)=> {
         /*Call the model's getProfessionalsGuards method to get only the doctors, dentists and pharmacies*/
         let pros = await professionalsModel.getProfessionalsGuards()
         /*Check whether an error has occurred during the database query*/

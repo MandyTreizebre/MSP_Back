@@ -34,7 +34,7 @@ class HealthInformations {
     /*Get all categories from the database*/
     static getCategories(){
         /*Request to select rows from category_informations table*/
-        return db.query('SELECT id, name, picture, name_url FROM category_informations')
+        return db.query('SELECT id, name, picture FROM category_informations')
         .then((res)=>{
             return res
         })
