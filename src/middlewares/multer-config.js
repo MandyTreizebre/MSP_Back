@@ -6,38 +6,46 @@ const MIME_TYPES = {
     'image/png': 'png',
 }
 
+// Configuration du stockage pour multer
 const storage = multer.diskStorage({
+    // Définition du dossier de destination pour les fichiers téléchargés
     destination: (req, file, callback) => {
         callback(null, 'public/images')
     },
+    // Définition du nom de fichier pour les fichiers téléchargés
     filename: (req, file, callback) => {
+        // Remplacer les espaces par des underscores et retirer l'extension
         const name = file.originalname.replace(/ /g, '_' ).split('.')[0]
+        // Supprimer les caractères non alphanumériques (sauf _ et -)
         const sanitizedName = name.replace(/[^a-zA-Z0-9_-]/g, '')
+        // Obtenir l'extension du fichier à partir de son type MIME
         const extension = MIME_TYPES[file.mimetype]
 
-        // Correction ici : vérifiez si le type MIME est une clé dans MIME_TYPES
+        // Vérification si le type MIME est supporté
         if (!MIME_TYPES[file.mimetype]) {
-            // Si le type MIME n'est pas supporté, vous pouvez appeler callback avec une erreur.
+            // Si le type MIME n'est pas supporté, retourner une erreur
             return callback(new Error('Type de fichier non autorisé.'), false);
         }
 
+        // Générer le nom final du fichier avec un timestamp pour le rendre unique
         callback(null, `${sanitizedName}_${Date.now()}.${extension}`)
     }
 })
 
-// Configurer les limites et spécifier le champ attendu pour le fichier
+// Générer le nom final du fichier avec un timestamp pour le rendre unique
 const upload = multer({
-    storage: storage,
+    storage: storage, // Utiliser la configuration de stockage définie ci-dessus
     limits: {
-        fileSize: 1024 * 1024 * 5 // 5MB max file size
+        fileSize: 1024 * 1024 * 5 // Taille maximale du fichier : 5 Mo
     },
     fileFilter: (req, file, callback) => {
+        // Vérifier si le type MIME est supporté
         if (MIME_TYPES[file.mimetype]) {
-            callback(null, true);
+            callback(null, true) // Accepter le fichier
         } else {
-            callback(new Error('Type de fichier non autorisé.'), false);
+            callback(new Error('Type de fichier non autorisé.'), false) // Rejeter le fichier avec une erreur
         }
     }
-}).single('picture') // Assurez-vous que 'picture' correspond au nom du champ dans votre formulaire.
+}).single('picture') //'picture' correspond au nom du champ dans les formulaires.
 
 module.exports = upload

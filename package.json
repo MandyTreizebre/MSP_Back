@@ -23,6 +23,7 @@
     "nodemailer": "^6.9.8",
     "nodemon": "^3.0.1",
     "promise-mysql": "^5.2.0",
+    "react-google-recaptcha": "^3.1.0",
     "validator": "^13.11.0"
   }
 }

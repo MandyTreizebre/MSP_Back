@@ -1,12 +1,12 @@
 const withAuth = require('../middlewares/withAuth')
 const multerErrorHandler = require('../middlewares/multerErrorHandler')
-const { escape } = require('validator')
+const validator = require('validator')
 
 module.exports = (app, db)=>{
 
     const ExternalProfessionalsDAL = require('../DAL/ExternalProfessionalsDAL')(db)
 
-    //Retrieve all external professionals
+    //Obtenirs tous les professionnels externes
     app.get('/api/external-professionals', async(req, res, next)=>{
 
         let allExternalPros = await ExternalProfessionalsDAL.getExternalPros()
@@ -20,12 +20,12 @@ module.exports = (app, db)=>{
         return
     })
 
-    //Retrieve all external professional by his ID
+    // Obtenir un professionnel externe par son ID
     app.get('/api/external-professional/:id', async (req, res, next)=>{
         
         let externalProById = await ExternalProfessionalsDAL.getExternalProById(req.params.id)
 
-        //Check if the ID exists            
+        // Vérifie si l'id existe dans la db           
         if (externalProById.length === 0) {
             res.status(204).json({ msg: "Il n'y a pas de professionnel correspondant à cet id" })
             return
@@ -40,18 +40,17 @@ module.exports = (app, db)=>{
         }
     })
 
-    // Add an external professional
+    // Ajouter un professionnel externe
     app.post('/api/save-external-professional', withAuth, multerErrorHandler, async(req, res, next)=>{
         
-        //Input cleaning 
-        const name = escape(req.body.name).trim()
-        const link = req.body.link
+        const name = validator.trim(req.body.name)
+        const link = validator.trim(req.body.link)
 
-        // Checks if data in input matches the regex
-        if (!/^[\p{L}0-9 .,'-]{1,50}$/u.test(name)) {
+        // Vérification des données dans les champs par rapport aux regex 
+        if (!/^[a-zA-ZÀ-ÖØ-öø-ÿ\s'’`-]{1,50}$/u.test(name)) {
             res.status(400).json({ msg: "Nom invalide" })
             return
-        }
+        }        
         
         if (!/^(https?:\/\/)?[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}(\/[a-zA-Z0-9._-]*)*\/?$/.test(link)) {
             res.status(400).json({ msg: "Lien invalide" })
@@ -60,7 +59,7 @@ module.exports = (app, db)=>{
 
         let addedExternalPros = await ExternalProfessionalsDAL.addExternalPro(req)
         
-        // checks for errors
+        // Vérifi des erreurs 
         if (addedExternalPros.code) {
             res.status(500).json({ msg: "Problème lors de l'ajout du professionnel" })
             return
@@ -70,27 +69,26 @@ module.exports = (app, db)=>{
         return
     })
 
-    // Modify an external professional
+    // Modifier un professionnel externe
     app.put('/api/update/external-pro/:id', withAuth, multerErrorHandler, async (req, res, next)=>{
         
-        //Input cleaning 
-        const name = escape(req.body.name).trim()
-        const link = req.body.link
+        const name = validator.trim(req.body.name)
+        const link = validator.trim(req.body.link)
        
-        // Checks if data in input matches the regex
-        if (!/^[\p{L}0-9 .,'-]{1,50}$/u.test(name)) {
+        // Vérification des données dans les champs par rapport aux regex 
+        if (!/^[a-zA-ZÀ-ÖØ-öø-ÿ\s'’`-]{1,50}$/u.test(name)) {
             res.status(400).json({ msg: "Nom invalide" })
             return
-        }
-
+        }        
+        
         if (!/^(https?:\/\/)?[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}(\/[a-zA-Z0-9._-]*)*\/?$/.test(link)) {
             res.status(400).json({ msg: "Lien invalide" })
             return
         }
-       
+
         let updatedExternalPro = await ExternalProfessionalsDAL.updateExternalPro(req, req.params.id)
 
-        // checks for errors
+        // Vérif des erreurs 
         if (updatedExternalPro.code) {
             res.status(500).json({ msg: "Problème lors de la modification du professionnel" })
             return
@@ -100,12 +98,12 @@ module.exports = (app, db)=>{
         return
     })
 
-    // Delete an external professional
+    // Supprimer un professionnel externe 
     app.delete('/api/delete/external-pro/:id', withAuth, async (req, res, next)=>{
         
         let deletedExternalPro = await ExternalProfessionalsDAL.deleteExternalPro(req.params.id)
 
-        // checks for errors
+        // Vérif des erreurs 
         if (deletedExternalPro.code) {
             res.status(500).json({ msg: "Problème lors de la suppression du professionnel" })
             return

@@ -1,12 +1,12 @@
 const withAuth = require('../middlewares/withAuth')
 const multerErrorHandler = require('../middlewares/multerErrorHandler')
-const { escape } = require('validator')
+const validator = require('validator')
 
 module.exports = (app,db)=>{
 
     const HealthInformationsDAL = require('../DAL/HealthInformationsDAL')(db)
     
-    // Retrieve all informations
+    // Obtenir toutes les informations
     app.get('/api/informations', async (req, res, next) => {
 
     	let infos = await HealthInformationsDAL.getInformations()
@@ -20,14 +20,12 @@ module.exports = (app,db)=>{
         return
     })
 
-    //Retrieve Information By Id 
+    // Obtenir une information par l'id 
     app.get('/api/information/:id', async (req, res, next) => {
-        console.log("Request Params:", req.params)
         let informationById = await HealthInformationsDAL.getOneInformationById(req.params.id)
-        console.log("ID reçu dans le DAL :", req.params.id)
         
-        //Check if the ID exists 
-        if ( informationById.length === 0 ) {
+        // Vérifie si l'id existe 
+        if (informationById.length === 0) {
             res.status(204).json({ msg: "Il n'y a pas d'information correspondant à cet id" })
             return
         } else {
@@ -41,7 +39,7 @@ module.exports = (app,db)=>{
         }
     })
     
-    // Retrieve informations by category
+    // Obtenir les informations par catégorie 
     app.get('/api/informations/:category', async (req, res, next)=> {
        
         let infosByCategory = await HealthInformationsDAL.getInformationsByCategory(req.params.category)
@@ -55,7 +53,7 @@ module.exports = (app,db)=>{
         return
     })
 
-    // Retrieve categories
+    // Obtenir les catégories
     app.get('/api/categories', async (req, res, next)=> {
 
         let categories = await HealthInformationsDAL.getCategories()
@@ -69,15 +67,15 @@ module.exports = (app,db)=>{
         return
     })
 
-    // Add an information
+    // Ajouter une information
     app.post('/api/save-information', withAuth, multerErrorHandler, async(req, res, next)=>{
 
-        //Input cleaning 
-        const title = escape(req.body.title).trim()
-        const description = escape(req.body.description).trim()
-        const link = req.body.link
+        const title = validator.trim(req.body.title)
+        const description = validator.trim(req.body.description)
+        const link = validator.trim(req.body.link)
 
-        if (!/^[\p{L}0-9 .,'-]{1,100}$/u.test(title)) {
+        // Vérification des données par rapport aux regex 
+        if (!/^[a-zA-ZÀ-ÖØ-öø-ÿ\s'’`-]{1,100}$/u.test(title)) {
             res.status(400).json({ msg: "Titre invalide" })
             return
         }
@@ -94,9 +92,8 @@ module.exports = (app,db)=>{
 
         let addedInformation = await HealthInformationsDAL.addInformation(req)
 
-        // checks for errors
+        // Vérif des erreurs 
         if (addedInformation.code) {
-            console.log("added information code", addedInformation.code)
             res.status(500).json({ msg: "Problème lors de la création de l'information" })
             return
         } 
@@ -106,17 +103,17 @@ module.exports = (app,db)=>{
 
     })
 
-    // Modify an information
+    // Modifier une information 
     app.put('/api/update-information/:id',withAuth, multerErrorHandler, async (req, res, next)=>{
        
-        //Input cleaning
-        const title = escape(req.body.title).trim() 
-        const description = escape(req.body.description).trim() 
-        const link = req.body.link
+        const title = validator.trim(req.body.title)
+        const description = validator.trim(req.body.description)
+        const link = validator.trim(req.body.link)
 
-        if (!/^[\p{L}0-9 .,'-]{1,100}$/u.test(title)) {
-           res.status(400).json({ msg: "Titre invalide" })
-           return
+        // Vérification des données par rapport aux regex 
+        if (!/^[a-zA-ZÀ-ÖØ-öø-ÿ\s'’`-]{1,100}$/u.test(title)) {
+            res.status(400).json({ msg: "Titre invalide" })
+            return
         }
 
         if (!/^[\p{L}0-9 .,'-]{1,500}$/u.test(description)) {
@@ -131,7 +128,7 @@ module.exports = (app,db)=>{
 
         let editedInformation = await HealthInformationsDAL.updateInformation(req, req.params.id)
         
-        // checks for errors
+        // Vérif des erreurs 
         if (editedInformation.code) {
             res.status(500).json({ msg: "Problème lors de la modification de l'information" })
             return
@@ -141,7 +138,7 @@ module.exports = (app,db)=>{
         return
     })
 
-    // DELETE an information
+    // Supprimer une information 
     app.delete('/api/delete-information/:id', withAuth,  async (req, res, next)=>{
     
         let deletedInformation = await HealthInformationsDAL.deleteInformation(req.params.id)
