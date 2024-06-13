@@ -1,27 +1,27 @@
 const jwt = require('jsonwebtoken')
 const cookieParser = require('cookie-parser')
-//Obtain the JWT secret from the environment variables
 const secret = process.env.JWT_SECRET
 
 const withAuth = (req, res, next)=> {
 
-    //Extract the token from cookies
+    //Extrait le token des cookies
     const token = req.cookies['token']
 
-    //Check if the token is undefined
-    if(token === undefined){
-        res.status(404).json({ msg: "Erreur, token introuvable, veuillez vous connecter"})
+    // Vérifie si le token est indéfini
+    if (token === undefined){
+        res.status(404).json({ msg: "Erreur, token introuvable, veuillez vous connecter" })
     } else {
-        //If the token is defined, verify it using the jwt.verify method
+        // Si le token est défini, le vérifier en utilisant la méthode jwt.verify
         jwt.verify(token, secret, (err, decoded)=>{
-            //If there's an error in verification, respond with a 401 status and an error message
+            // Si une erreur survient lors de la vérification 
             if(err) {
                 res.status(401).json({ msg: 'token invalide' })
             } else {
-                //If the token is valid, extract the decoded id and assign it to req.id
+                // Si le token est valide, extraire l'id décodé et l'assigner à req.id
                 req.id = decoded.id
                 req.token = token
-
+                
+                // Passe au middleware suivant si tout est ok
                 next()
             }
         })

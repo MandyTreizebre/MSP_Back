@@ -1,35 +1,32 @@
-//Export function to initialize DAL with database connection
 module.exports = (_db) => {
     db = _db 
     return NewsDAL
 }
 
 class NewsDAL {
-    //Get all news from the database
+    // Obtenir toutes les actualités
     static getNews(){
         return db.query('SELECT id, title, details, picture, external_link FROM news')
-        .then((res)=>{
-            return res
-        })
-        .catch((err)=>{
-            return err
-        })
+            .then((res)=>{
+                return res
+            })
+            .catch((err)=>{
+                return err
+            })
     }
 
-    // Get On New By Id 
+    // Obtenir une actualité par son ID
     static getNewById(id){
-        console.log("id dans le DAL => ", id)
         return db.query('SELECT id, title, details, picture, external_link FROM news WHERE id = ?', [id] )
-        .then((res)=>{
-            console.log("res dans getNewById", res)
-            return res
-        })
-        .catch((err)=>{
-            return err
-        })
+            .then((res)=>{
+                return res
+            })
+            .catch((err)=>{
+                return err
+            })
     }
 
-    //Add a new to the database
+    // Ajouter une actualité
     static addNew(req){
         const title = req.body.title
         const details = req.body.details
@@ -49,7 +46,7 @@ class NewsDAL {
         })
     }
 
-    //Update an existing new in the database
+    // Mettre à jour une actualité
     static updateNew(req, id){
 
         const title = req.body.title
@@ -77,7 +74,7 @@ class NewsDAL {
         })
     }
 
-    //Delete an existing new in the database
+    // Supprimer une actualité
     static deleteNew(id){
         return db.query('DELETE FROM news WHERE id= ?', [id])
         .then((res)=>{

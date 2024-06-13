@@ -1,4 +1,4 @@
-// Configure NodeMailer
+// Configuration de NodeMailer pour l'envoi du mail dans forgot password 
 const nodemailer = require('nodemailer')
 
 let transporter = nodemailer.createTransport({

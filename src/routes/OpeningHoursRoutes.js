@@ -4,7 +4,7 @@ module.exports = (app, db)=>{
    
     const OpeningHoursDAL = require('../DAL/OpeningHoursDAL')(db)
 
-    // Retrieve all opening hours
+    // Obtenir tous les horaires 
     app.get('/api/opening-hours', async(req, res, next)=>{
         
         let OpeningHours = await OpeningHoursDAL.getOpeningHours()
@@ -18,9 +18,8 @@ module.exports = (app, db)=>{
         return
     })
 
-    // Retrieve the opening hours of a specific professional
+    // Obtenir les horaires d'un professionnel 
     app.get('/api/pro/opening-hours/:pro_id/:day_id', async (req, res, next)=>{
-        console.log("Request Params:", req.params)
         let openingHoursByProfessionnal = await OpeningHoursDAL.getOpeningHoursByProAndDay(req.params.pro_id, req.params.day_id)
         
         if (openingHoursByProfessionnal.code) {
@@ -33,7 +32,7 @@ module.exports = (app, db)=>{
 
     })
 
-    // Add opening hours in the database 
+    // Ajouter des horaires 
     app.post('/api/save/opening-hours', withAuth, async (req, res, nest)=>{
         const pro_id = parseInt(req.body.pro_id, 10)
         const day_id = parseInt(req.body.day_id, 10)
@@ -88,12 +87,11 @@ module.exports = (app, db)=>{
             return
         } 
 
-        // register professional
         res.status(201).json({ result: savedOpeningHours })
         return
     })
 
-    // Modify an information
+    // Modifier les horaires 
     app.put('/api/edit/opening-hours/:pro_id', withAuth, async (req, res, next)=>{
 
         const day_id = parseInt(req.body.day_id, 10)
@@ -136,7 +134,7 @@ module.exports = (app, db)=>{
         return
     })
 
-    // Retrieve all days
+    // Obtenir les horaires 
     app.get('/api/days', async (req, res, next)=> {
         
         let days = await OpeningHoursDAL.getDays()

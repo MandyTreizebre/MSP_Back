@@ -2,7 +2,7 @@ const mysql = require("promise-mysql")
 
 let databaseConnection = undefined
 
-/*Creating a connection to the database*/
+/*Création d'une connexion à la db*/
 mysql.createConnection({
     host: process.env.HOST,
     database: process.env.DATABASE,

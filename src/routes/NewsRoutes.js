@@ -1,11 +1,11 @@
 const withAuth = require('../middlewares/withAuth')
 const multerErrorHandler = require('../middlewares/multerErrorHandler')
-const { escape } = require('validator')
+const validator = require('validator')
 
 module.exports = (app, db)=>{
     const NewsDAL = require('../DAL/NewsDAL')(db)
 
-    // Retrieve all news*/
+    // Obtenir toutes les actualités 
     app.get('/api/news', async(req, res, next)=>{
  
         let news = await NewsDAL.getNews()
@@ -19,10 +19,9 @@ module.exports = (app, db)=>{
         return
     })
 
-    //Retrieve a new by his id 
+    // Obtenir lune actualité par id 
     app.get('/api/new/:id', async (req, res, next)=>{
         let newById = await NewsDAL.getNewById(req.params.id)
-        console.log(req.params.id)
 
         if (newById.length === 0) {
             res.status(204).json({ msg: "Il n'y a pas d'actualités' correspondant à cet id" })
@@ -38,21 +37,21 @@ module.exports = (app, db)=>{
         }
     })
 
-    // Add a new
+    // Ajouter une actualité 
     app.post('/api/save-new', withAuth, multerErrorHandler, async(req, res, next)=>{
 
-        //Input cleaning 
-        const title = escape(req.body.title).trim()
-        const details = escape(req.body.details).trim()
-        const external_link = req.body.external_link
+        const title = validator.trim(req.body.title)
+        const details = validator.trim(req.body.details)
+        const external_link = validator.trim(req.body.external_link)
 
-        if (!/^[a-zA-Z0-9 .,'-]{1,50}$/.test(title)) {
+        // Vérification des données par rapport aux regex 
+        if (!/^[a-zA-ZÀ-ÖØ-öø-ÿ\s'’`-]{1,50}$/.test(title)) {
             res.status(400).json({ msg: "Titre invalide" })
             return
         }
 
-        if (!/^[a-zA-Z0-9 .,'-]{1,200}$/.test(details)) {
-            res.status(400).json({ msg: "Description invalide" })
+        if (!/^[\p{L}0-9 .,'-]{1,200}$/u.test(details)) {
+            res.status(400).json({ msg: "Détails invalide" })
             return
         }
 
@@ -63,7 +62,7 @@ module.exports = (app, db)=>{
 
         let addedNew = await NewsDAL.addNew(req)
 
-        // checks for errors
+        // Vérif des erreurs 
         if (addedNew.code) {
             res.status(500).json({ msg: "Problème lors de l'ajout de l'actualité" })
             return
@@ -73,21 +72,21 @@ module.exports = (app, db)=>{
         return
     })
 
-    // Modify a new
+    // Modifier une actualité
     app.put('/api/update-new/:id', withAuth, multerErrorHandler, async (req, res, next)=>{
 
-        //Input cleaning 
-        const title = escape(req.body.title).trim()
-        const details = escape(req.body.details).trim()
-        const external_link = req.body.external_link
+        const title = validator.trim(req.body.title)
+        const details = validator.trim(req.body.details)
+        const external_link = validator.trim(req.body.external_link)
 
-        if (!/^[a-zA-Z0-9 .,'-]{1,50}$/.test(title)) {
+        // Vérification des données par rapport aux regex 
+        if (!/^[a-zA-ZÀ-ÖØ-öø-ÿ\s'’`-]{1,50}$/.test(title)) {
             res.status(400).json({ msg: "Titre invalide" })
             return
         }
 
-        if (!/^[a-zA-Z0-9 .,'-]{1,200}$/.test(details)) {
-            res.status(400).json({ msg: "Description invalide" })
+        if (!/^[\p{L}0-9 .,'-]{1,200}$/u.test(details)) {
+            res.status(400).json({ msg: "Détails invalide" })
             return
         }
 
@@ -107,12 +106,12 @@ module.exports = (app, db)=>{
         return
     })
 
-    // Delete a new
+    // Supprimer une actualité
     app.delete('/api/delete-new/:id', withAuth,  async (req, res, next)=>{
 
         let deletedNew = await NewsDAL.deleteNew(req.params.id)
 
-        // checks for errors
+        // Vérif des erreurs 
         if (deletedNew.code) {
             res.status(500).json({ msg: "Problème lors de la suppresion de l'actualité" })
             return

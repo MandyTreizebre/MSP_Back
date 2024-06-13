@@ -1,50 +1,53 @@
-/*Importing the express module*/
+// Importation du module express
 const express = require('express')
-/*Initializing a new instance of express, which will be referred to as app*/
+
+// Création d'une application express
 const app = express()
 
+// Importation de body-parser pour analyser les corps de requêtes HTTP
 const bodyParser = require('body-parser')
 
-app.use((req, res, next) => {
-    res.setHeader("Content-Security-Policy", "default-src 'self'; script-src 'self'; object-src 'none'; style-src 'self' 'unsafe-inline'; frame-src 'none';")
-    next()
-})
-
-/*Importing the cookie-parser middleware*/
+// Importation de cookie-parser pour analyser les cookies dans les requêtes
 const cookieParser = require('cookie-parser')
-/*Using cookie-parser middleware with the app*/
+
+// Utilisation du middleware cookie-parser avec l'application express
 app.use(cookieParser())
 
-/*Importing environment variables */
+// Chargement des variables d'environnement depuis un fichier .env
 require('dotenv').config()
 
-/*Importing the 'promise-mysql' module for interaction with the database*/
+// Importation du module promise-mysql pour interagir avec la base de données
 const mysql = require("promise-mysql")
-/*Importing the 'cors' module*/
+
+// Importation du module cors pour permettre les requêtes cross-origin
 const cors = require('cors')
 
-/*Enabling the cors middleware with specific configurations*/
+// Activation du middleware cors avec des configurations spécifiques
 app.use(cors({
     credentials: true,
     origin: 'http://localhost:5173', 
     allowedHeaders: ['Authorization', 'Content-Type']
 }))
 
+// Utilisation de body-parser pour analyser les requêtes JSON
 app.use(bodyParser.json())
-/*Importing the 'express.urlencoded' middleware to handle data sent by HTML forms*/
+
+// Utilisation de express.urlencoded pour analyser les données envoyées par des formulaires HTML
 app.use(express.urlencoded({extended: true}))
-/*Importing the 'express.json' middleware to handle JSON data sent in the HTTP request body*/
+
+// Utilisation de express.json pour analyser les données JSON envoyées dans le corps des requêtes HTTP
 app.use(express.json())
-/*Importing the 'express.static' middleware to make static files in the 'public' directory accessible from the browser*/
+
+// Utilisation de express.static pour rendre les fichiers statiques dans le répertoire 'public' accessibles depuis le navigateur
 app.use(express.static(__dirname+'/../public'))
 
-/*Defining database connection parameters from environment variables*/
+// Définition des paramètres de connexion à la base de données à partir des variables d'environnement
 const host = process.env.HOST 
 const database = process.env.DATABASE 
 const user = process.env.USER 
 const password = process.env.PASSWORD 
 
-/*Importing routes*/
+/* Importation des routes */
 const professionalsRoutes = require('./routes/ProfessionalsRoutes')
 const openingHoursRoutes = require('./routes/OpeningHoursRoutes')
 const externalProfessionalsRoutes = require ('./routes/ExternalProfessionalsRoutes')
@@ -56,7 +59,7 @@ const authRoutes = require('./routes/AuthRoutes')
 // GOOGLE RECAPTCHA
 
 
-/*Creating a connection to the database*/
+// Création d'une connexion à la base de données
 mysql.createConnection({
     host: host,
     database: database,
@@ -64,17 +67,17 @@ mysql.createConnection({
     password: password
 }).then((db)=>{
     console.log("Connexion Ok")
-    /*Setting an interval to keep the connection alive*/
+    // Configuration d'un intervalle pour maintenir la connexion active
     setInterval(async ()=>{
         let res = await db.query ('SELECT 1')
     }, 1000)
 
-    /*Defining a root route for basic connectivity check*/
+    // Définition d'une route racine pour vérifier la connectivité de base
     app.get('/', async (req, res, next)=>{
         res.json({status: 200, msg: "Connexion root OK"})
     })
 
-    /*Calling the route functions and passing the app and database connection as arguments*/
+    // Appel des fonctions de route et passage de l'application et de la connexion à la base de données comme arguments
     professionalsRoutes(app, db)
     openingHoursRoutes(app, db)
     externalProfessionalsRoutes(app, db)
@@ -85,10 +88,10 @@ mysql.createConnection({
 })
 .catch(err => console.log('Echec connexion', err))
 
-/*Defining the port from environment variables*/
+// Définition du port à partir des variables d'environnement
 const PORT = process.env.PORT
 
-/*Starting the server and listening on the defined port*/
+// Démarrage du serveur et écoute sur le port défini
 app.listen(PORT, () =>{
     console.log(`Ecoute sur le port ${PORT}`)
 })

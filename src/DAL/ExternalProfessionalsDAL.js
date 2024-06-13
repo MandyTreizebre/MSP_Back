@@ -4,34 +4,34 @@ module.exports = (_db) => {
 }
 
 class ExternalProfessionalsDAL {
-    //Get all external professionals from the database
+    // Obtenir les professionnels externes
     static getExternalPros(){
         return db.query('SELECT id, name, picture, link from external_professionals')
-        .then((res)=>{
-            return res
-        })
-        .catch((err)=>{
-            return err
-        })
+            .then((res)=>{
+                return res
+            })
+            .catch((err)=>{
+                return err
+            })
     }
 
-    //Get external Pro By ID 
+    // Obtenir un professionnel externe par son ID
     static getExternalProById(id){
         return db.query('SELECT id, name, picture, link FROM external_professionals WHERE id = ?',[id] )
-        .then((res)=>{
-            return res
-        })
-        .catch((err)=>{
-            return err
-        })
+            .then((res)=>{
+                return res
+            })
+            .catch((err)=>{
+                return err
+            })
     }
 
-    //Add new external professional
+    // Ajouter un nouveau professionnel externe
     static addExternalPro(req){
         const name = req.body.name
         const link = req.body.link
         
-        // Use 'default.jpg' (or your default file name) if no file is uploaded
+        // Utiliser l'image par défaut si aucune image n'est uploadé
         const picturePath = req.file ? `images/${req.file.filename}` : 'images/external_pro_default_picture.png'
     
         let query = 'INSERT INTO external_professionals (name, link, picture) VALUES (?, ?, ?)'
@@ -46,7 +46,7 @@ class ExternalProfessionalsDAL {
         })
     }
 
-    // Update an existing external professional 
+    // Mettre à jour un professionnel externe
     static updateExternalPro(req, id) {
         const name = req.body.name
         const link = req.body.link
@@ -54,7 +54,7 @@ class ExternalProfessionalsDAL {
         let query = 'UPDATE external_professionals SET name= ?, link= ?'
         let queryParams = [name, link]
     
-        // Check if an image has been downloaded
+        // Vérification de l'image
         if (req.file) {
             const picturePath = req.file ? `images/${req.file.filename}` : null
             query += ', picture= ?' 
@@ -73,14 +73,14 @@ class ExternalProfessionalsDAL {
             })
     }
 
-    //Delete an existing external professional 
+    // Supprimer un professionnel externe
     static deleteExternalPro(id){
         return db.query('DELETE FROM external_professionals WHERE id= ?', [id])
-        .then((res)=>{
-            return res
-        })
-        .catch((err)=>{
-            return err
-        })
+            .then((res)=>{
+                return res
+            })
+            .catch((err)=>{
+                return err
+            })
     }
 }
