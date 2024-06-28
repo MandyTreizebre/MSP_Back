@@ -157,7 +157,7 @@ module.exports = (app, db)=>{
     
             //Génère un token de réinitialisation et définit la date d'expiration (2min) 
             const resetToken = crypto.randomBytes(20).toString('hex') 
-            const resetTokenExpires = new Date(Date.now() + 2 * 60 * 1000) 
+            const resetTokenExpires = new Date(Date.now() + 60 * 60 * 1000) 
     
             //Mise à jour de l'admin dans la db avec le token et la date d'expiration 
             await adminDAL.updateAdmin(email, { reset_token: resetToken, reset_token_expiration: resetTokenExpires }) 
@@ -226,5 +226,6 @@ module.exports = (app, db)=>{
         } catch (error) {
             res.status(500).json({ msg: "Erreur interne" }) 
         }
-    }) 
+    })
+
 }

@@ -55,6 +55,7 @@ const newsRoutes = require ('./routes/NewsRoutes')
 const adminsRoutes = require('./routes/AdminsRoutes')
 const infosRoutes = require('./routes/HealthInformationsRoutes')
 const authRoutes = require('./routes/AuthRoutes')
+const pharmaciesOnCallRoutes = require('./routes/PharmaciesOnCallRoutes')
 
 // GOOGLE RECAPTCHA
 
@@ -85,6 +86,7 @@ mysql.createConnection({
     adminsRoutes(app, db)
     infosRoutes(app, db)
     authRoutes(app, db)
+    pharmaciesOnCallRoutes(app, db)
 })
 .catch(err => console.log('Echec connexion', err))
 
