@@ -59,7 +59,7 @@ module.exports = (app, db)=>{
 
         let addedExternalPros = await ExternalProfessionalsDAL.addExternalPro(req)
         
-        // Vérifi des erreurs 
+        // Vérif des erreurs 
         if (addedExternalPros.code) {
             res.status(500).json({ msg: "Problème lors de l'ajout du professionnel" })
             return
